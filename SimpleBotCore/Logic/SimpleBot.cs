@@ -1,4 +1,6 @@
-﻿using SimpleBotCore.Bot;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
+using SimpleBotCore.Bot;
 using SimpleBotCore.Repositories;
 using System;
 using System.Collections.Generic;
@@ -10,14 +12,17 @@ namespace SimpleBotCore.Logic
     public class SimpleBot : BotDialog
     {
         IUserProfileRepository _userProfile;
+        IPerguntasMongoRepository _perguntasRepository;
 
-        public SimpleBot(IUserProfileRepository userProfile)
+        public SimpleBot(IUserProfileRepository userProfile, IPerguntasMongoRepository perguntasRepository)
         {
             _userProfile = userProfile;
+            _perguntasRepository = perguntasRepository;
         }
 
         protected async override Task BotConversation()
         {
+           
             SimpleUser user = _userProfile.TryLoadUser(UserId);
 
             // Create a user if it is null
@@ -71,12 +76,8 @@ namespace SimpleBotCore.Logic
 
                 if( texto.EndsWith("?") )
                 {
-                    await WriteAsync("Processando...");
-
-                    // FAZER: GRAVAR AS PERGUNTAS EM UM BANCO DE DADOS
-                    await Task.Delay(5000);
-
-                    await WriteAsync("Resposta não encontrada");
+                    _perguntasRepository.InsertPergunta(user, texto);
+                    await WriteAsync("Pergunta gravada no Banco de Dados!");
                 }
                 else
                 {
