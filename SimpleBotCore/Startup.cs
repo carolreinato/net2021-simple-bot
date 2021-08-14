@@ -23,7 +23,7 @@ namespace SimpleBotCore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var client = new MongoClient();
+            var client = new MongoClient(Configuration.GetConnectionString("MongoDB"));
             var perguntasRepository = new PerguntasMongoRepository(client);
             var userProfileRepository = new UserProfileMongoRepository(client);
 
